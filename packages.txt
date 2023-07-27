@@ -1,5 +1,4 @@
-pandas
-bs4
+bs4-dev
 seaborn
 matplotlib
 streamlit
