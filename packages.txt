@@ -1,4 +1,5 @@
 bs4-dev
+bs4
 seaborn
 matplotlib
 streamlit
