@@ -18,30 +18,34 @@ sns.set_theme(style="white")
 
 
 
-st.title('Trabalho final (ainda incompleto) - Davi e João Guilherme')
+st.title('Trabalho final de Python Avançado - Davi e João Guilherme')
 
 st.header("Motivação do trabalho")
-st.write('Vamos analisar dados relativos aos filmes no top 1000 do IMDb por rating nessa plataforma.')
-st.write('Primeiramente, selecione o arquivo filmes.csv abaixo')
 
-df_csv = st.file_uploader('Selecione o arquivo',
+st.markdown('<div style="text-align: justify;">Vamos analisar dados relativos aos filmes no top 1000 do IMDb por rating nessa plataforma (https://www.imdb.com/search/title/?groups=top_1000&sort=user_rating,desc&ref_=adv_nxt). Faremos uma análise univariada das variáveis coletadas (ano de lançamento, gênero do filme, tempo de duração, nota no IMDb, metascore do filme, número de votos no IMDb e lucro bruto do filme nos EUA. Após isso, será feita uma análise bivariada relacionando algumas variáveis à nota do IMDb. São feitas também outras visualizações para mostrar correlações ou rankings dos filmes. Ao fim, é feito um modelo de machine learning para prever a nota do filme no IMDb com base nas outras variáveis coletadas.</div>', unsafe_allow_html=True)
+
+st.write('Primeiramente, selecione o arquivo filmes.csv na caixa abaixo:')
+
+df_csv = st.file_uploader('',
                                   type=['csv'])
 
 if df_csv:
     filmes = pd.read_csv(df_csv)
     st.dataframe(filmes.head())
 
-    st.header('Alguns gráficos')
+    st.header('Visualização de dados')
 
     option = st.selectbox("Selecione um gráfico ou grupo de gráficos:", ["Análise univariada: histogramas e gráficos de barras",
                                                    "Análise bivariada: regressões simples e boxplots",          
                                                    "Heatmap de correlação",
                                                    "Top 10 filmes por nota do IMDb",
                                                    "Top 10 filmes por lucro bruto nos EUA",
-                                                   "Top 8 anos com mais lançamentos de filmes no top 2000 do IMDb",
-                                                   "Top 10 gêneros"])
+                                                   "Top 8 anos com mais lançamentos de filmes no top 1000 do IMDb"])
 
     if option == "Análise univariada: histogramas e gráficos de barras":
+        
+        st.markdown('<div style="text-align: justify;">Fizemos alguns histogramas e gráficos de barras para expor uma análise univariada das variáveis coletadas.</div>', unsafe_allow_html=True)
+        
         fig, axes = plt.subplots(nrows = 3, ncols = 2, figsize = (15, 10))
         for index, column in enumerate(['ano', 'duracao', 'nota_imdb', 'metascore', 'num_votos', 'lucro_eua']):
             ax = axes.flatten()[index]
@@ -75,6 +79,9 @@ if df_csv:
         st.pyplot(fig)
 
     elif option == "Análise bivariada: regressões simples e boxplots":
+        
+        st.markdown('<div style="text-align: justify;">Fizemos uma análise bivariada relacionando a nota do filme no IMDb com as variáveis coletadas, sejam elas numéricas, sejam categóricas.</div>', unsafe_allow_html=True)
+        
         f = sns.lmplot(data=filmes, x='metascore', y='nota_imdb')
         st.pyplot(f)
 
@@ -100,7 +107,10 @@ if df_csv:
         st.pyplot(fig)
 
     elif option == "Heatmap de correlação":
-        filmes_num = filmes.drop(['titulo', 'genero'], axis=1)
+        
+        st.markdown('<div style="text-align: justify;">Fizemos um heatmap mostrando a correlação entre as variáveis. Quanto à correlação com nossa variável de interesse, a nota no IMDb, vê-se que há correlação negativa com o ano de lançamento do filme e correlação positiva com o tempo de duração, metascore, número de votos (proxy para popularidade) e lucro bruto nos EUA</div>', unsafe_allow_html=True)
+        
+        filmes_num = filmes.drop(['titulo', 'genero', 'genero1', 'genero2', 'genero3'], axis=1)
         corr = filmes_num.corr()
         mask = np.triu(np.ones_like(corr, dtype=bool))
         f, ax = plt.subplots(figsize=(11, 9))
@@ -136,9 +146,9 @@ if df_csv:
         
     st.header('Modelo de Machine Learning')
     
-    st.write('Vamos utilizar um RandomForestRegressor para prever a nota do IMDb do filme com base nas seguintes features: ano, duração, metascore, número de votos (proxy de popularidade), lucro bruto nos EUA e o primeiro gênero do filme (será feito um OneHotEncoding para esta feature).')
-    
-    st.write('O modelo pode demorar algum tempo para rodar. O dataset de treino das features que utilizamos é o seguinte:')
+    st.markdown('<div style="text-align: justify;">Vamos utilizar um RandomForestRegressor para prever a nota do IMDb do filme com base nas seguintes features: ano, duração, metascore, número de votos (proxy de popularidade), lucro bruto nos EUA e o primeiro gênero do filme (será feito um OneHotEncoding para esta feature).</div>', unsafe_allow_html=True)
+        
+    st.markdown('<div style="text-align: justify;">O modelo pode demorar algum tempo para rodar. O dataset de treino das features que utilizamos é o seguinte (as dummies são dummies para o primeiro gênero do filme):</div>', unsafe_allow_html=True)
     
     filmes['genero1'] = filmes['genero1'].astype("category")
     filmes['genero1new'] = filmes['genero1'].cat.codes
@@ -180,6 +190,3 @@ if df_csv:
     plt.xlabel("Real", fontsize=14)
     plt.ylabel("Predito", fontsize=14)
     st.pyplot(fig)
-
-
-
